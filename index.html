@@ -23,7 +23,7 @@
         form {
             margin-bottom: 20px;
         }
-        input[type="text"], input[type="number"], select, input[type="date"] {
+        input[type="text"], input[type="number"], input[type="date"], select {
             width: calc(100% - 10px);
             padding: 8px;
             margin-bottom: 10px;
@@ -65,6 +65,10 @@
             </select>
             <label for="reason">Razón:</label>
             <input type="text" id="reason" name="reason">
+            <label for="invoice">Número de Factura:</label>
+            <input type="text" id="invoice" name="invoice" pattern="[a-zA-Z0-9]{6,}" title="Ingrese al menos 6 caracteres entre letras y números">
+            <label for="plate">Número de Placa:</label>
+            <input type="text" id="plate" name="plate" pattern="[a-zA-Z0-9]{6,}" title="Ingrese al menos 6 caracteres entre letras y números">
             <input type="submit" value="Agregar Transacción">
         </form>
         <h3>Resumen de Transacciones</h3>
@@ -75,6 +79,8 @@
                     <th>Monto</th>
                     <th>Tipo</th>
                     <th>Razón</th>
+                    <th>Número de Factura</th>
+                    <th>Número de Placa</th>
                 </tr>
             </thead>
             <tbody id="transactionList">
@@ -86,7 +92,7 @@
             <p><strong>Egresos Totales:</strong> <span id="totalExpense">0</span></p>
             <p><strong>Monto en General:</strong> <span id="overallAmount">0</span></p>
         </div>
-        <button id="generateReportBtn">Generar Reporte</button>
+        <button id="generateReportBtn">Generar Reporte Excel</button>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script>
@@ -107,6 +113,8 @@
             const amount = parseFloat(document.getElementById('amount').value);
             const type = document.getElementById('type').value;
             const reason = document.getElementById('reason').value;
+            const invoice = document.getElementById('invoice').value;
+            const plate = document.getElementById('plate').value;
 
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
@@ -114,6 +122,8 @@
                 <td>${amount}</td>
                 <td>${type}</td>
                 <td>${reason}</td>
+                <td>${invoice}</td>
+                <td>${plate}</td>
             `;
             transactionList.appendChild(newRow);
 
@@ -124,12 +134,17 @@
             }
 
             updateSummary();
+            resetForm();
         });
 
         function updateSummary() {
             overallAmountElement.textContent = (totalIncome - totalExpense).toFixed(2);
             totalIncomeElement.textContent = totalIncome.toFixed(2);
             totalExpenseElement.textContent = totalExpense.toFixed(2);
+        }
+
+        function resetForm() {
+            transactionForm.reset();
         }
 
         function generateExcel() {
