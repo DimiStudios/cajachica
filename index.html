@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Caja Chica</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"], input[type="number"], select {
+            width: calc(100% - 10px);
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Sistema de Caja Chica</h2>
+        <form id="transactionForm">
+            <label for="amount">Monto:</label>
+            <input type="number" id="amount" name="amount" required>
+            <label for="type">Tipo:</label>
+            <select id="type" name="type">
+                <option value="ingreso">Ingreso</option>
+                <option value="egreso">Egreso</option>
+            </select>
+            <label for="reason">Razón:</label>
+            <input type="text" id="reason" name="reason">
+            <input type="submit" value="Agregar Transacción">
+        </form>
+        <h3>Resumen de Transacciones</h3>
+        <table id="transactionTable">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Monto</th>
+                    <th>Tipo</th>
+                    <th>Razón</th>
+                </tr>
+            </thead>
+            <tbody id="transactionList">
+                <!-- Aquí se llenarán dinámicamente los registros -->
+            </tbody>
+        </table>
+        <div id="summary">
+            <p><strong>Ingresos Totales:</strong> <span id="totalIncome">0</span></p>
+            <p><strong>Egresos Totales:</strong> <span id="totalExpense">0</span></p>
+            <p><strong>Monto en General:</strong> <span id="overallAmount">0</span></p>
+        </div>
+        <button id="generateReportBtn">Generar Reporte</button>
+    </div>
+    <script>
+        let totalIncome = 0;
+        let totalExpense = 0;
+
+        const transactionForm = document.getElementById('transactionForm');
+        const transactionList = document.getElementById('transactionList');
+        const totalIncomeElement = document.getElementById('totalIncome');
+        const totalExpenseElement = document.getElementById('totalExpense');
+        const overallAmountElement = document.getElementById('overallAmount');
+        const generateReportBtn = document.getElementById('generateReportBtn');
+
+        transactionForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const amount = parseFloat(document.getElementById('amount').value);
+            const type = document.getElementById('type').value;
+            const reason = document.getElementById('reason').value;
+            const date = new Date().toLocaleDateString();
+
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${date}</td>
+                <td>${amount}</td>
+                <td>${type}</td>
+                <td>${reason}</td>
+            `;
+            transactionList.appendChild(newRow);
+
+            if (type === 'ingreso') {
+                totalIncome += amount;
+            } else if (type === 'egreso') {
+                totalExpense += amount;
+            }
+
+            updateSummary();
+        });
+
+        function updateSummary() {
+            overallAmountElement.textContent = (totalIncome - totalExpense).toFixed(2);
+            totalIncomeElement.textContent = totalIncome.toFixed(2);
+            totalExpenseElement.textContent = totalExpense.toFixed(2);
+        }
+
+        function generateReport() {
+            const doc = new jsPDF();
+            
+            doc.text('Reporte de Transacciones', 10, 10);
+
+            const tableRows = document.querySelectorAll('#transactionList tr');
+            let rowIndex = 1;
+            tableRows.forEach(row => {
+                const columns = row.querySelectorAll('td');
+                let columnIndex = 0;
+                columns.forEach(column => {
+                    doc.text(column.textContent, 10 + columnIndex * 50, 20 + rowIndex * 10);
+                    columnIndex++;
+                });
+                rowIndex++;
+            });
+
+            doc.save('reporte_transacciones.pdf');
+        }
+
+        generateReportBtn.addEventListener('click', generateReport);
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js" defer></script>
+</body>
+</html>
