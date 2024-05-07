@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h2>Sistema de Caja Chica</h2>
-        <form id="transactionForm">
+        <form id="transactionForm" method="post" action="process_form.php"> <!-- Aquí está el cambio -->
             <label for="date">Fecha:</label>
             <input type="date" id="date" name="date">
             <label for="amount">Monto:</label>
