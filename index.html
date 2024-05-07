@@ -66,9 +66,11 @@
             <label for="reason">Razón:</label>
             <input type="text" id="reason" name="reason">
             <label for="invoice">Número de Factura:</label>
-            <input type="text" id="invoice" name="invoice" pattern="[a-zA-Z0-9]{6,}" title="Ingrese al menos 6 caracteres entre letras y números">
+            <input type="text" id="invoice" name="invoice" pattern="[a-zA-Z0-9]{3,}" title="Ingrese al menos 3 caracteres, letras y números">
             <label for="plate">Número de Placa:</label>
-            <input type="text" id="plate" name="plate" pattern="[a-zA-Z0-9]{6,}" title="Ingrese al menos 6 caracteres entre letras y números">
+            <input type="text" id="plate" name="plate" pattern="[a-zA-Z0-9]{3,}" title="Ingrese al menos 3 caracteres, letras y números">
+            <label for="provider">Proveedor:</label>
+            <input type="text" id="provider" name="provider">
             <input type="submit" value="Agregar Transacción">
         </form>
         <h3>Resumen de Transacciones</h3>
@@ -81,6 +83,7 @@
                     <th>Razón</th>
                     <th>Número de Factura</th>
                     <th>Número de Placa</th>
+                    <th>Proveedor</th>
                 </tr>
             </thead>
             <tbody id="transactionList">
@@ -90,7 +93,7 @@
         <div id="summary">
             <p><strong>Ingresos Totales:</strong> <span id="totalIncome">0</span></p>
             <p><strong>Egresos Totales:</strong> <span id="totalExpense">0</span></p>
-            <p><strong>Monto en General:</strong> <span id="overallAmount">0</span></p>
+            <p><strong>Saldo:</strong> <span id="overallAmount">0</span></p>
         </div>
         <button id="generateReportBtn">Generar Reporte Excel</button>
     </div>
@@ -115,6 +118,7 @@
             const reason = document.getElementById('reason').value;
             const invoice = document.getElementById('invoice').value;
             const plate = document.getElementById('plate').value;
+            const provider = document.getElementById('provider').value;
 
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
@@ -124,6 +128,7 @@
                 <td>${reason}</td>
                 <td>${invoice}</td>
                 <td>${plate}</td>
+                <td>${provider}</td>
             `;
             transactionList.appendChild(newRow);
 
@@ -152,7 +157,7 @@
             const ws = XLSX.utils.table_to_sheet(document.getElementById('transactionTable'));
             const totalIncomeRow = ['Total de ingresos', totalIncome.toFixed(2)];
             const totalExpenseRow = ['Total de egresos', totalExpense.toFixed(2)];
-            const overallAmountRow = ['Monto en General', (totalIncome - totalExpense).toFixed(2)];
+            const overallAmountRow = ['Saldo', (totalIncome - totalExpense).toFixed(2)];
             XLSX.utils.sheet_add_aoa(ws, [totalIncomeRow], { origin: -1 });
             XLSX.utils.sheet_add_aoa(ws, [totalExpenseRow], { origin: -1 });
             XLSX.utils.sheet_add_aoa(ws, [overallAmountRow], { origin: -1 });
